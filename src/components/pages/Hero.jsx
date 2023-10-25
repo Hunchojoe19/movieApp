@@ -3,7 +3,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Skeleton } from "@mui/material";
 import axios from "axios";
 
 const data = [
