@@ -4,6 +4,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TheatersIcon from "@mui/icons-material/Theaters";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 
 const SingleMovie = () => {
   const location = useLocation();
@@ -13,6 +14,8 @@ const SingleMovie = () => {
     setData(location.state);
   }, [location.state]);
 
+  const { videoData } = useSelector((state) => state);
+  console.log("videoData ", videoData);
   const variants = {
     hidden: { opacity: 0 },
     visible: {

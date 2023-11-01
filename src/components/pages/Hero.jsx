@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { ThreeCircles } from "react-loader-spinner";
+import { useDispatch, useSelector } from "react-redux";
 
 // const data = [
 //   {
@@ -78,6 +79,7 @@ const Hero = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState([]);
+  const [date, setDate] = useState([]);
   const [error, setError] = useState("");
 
   const imageVariants = {
@@ -113,6 +115,8 @@ const Hero = () => {
       state: item,
     });
   };
+  const dispatch = useDispatch();
+
   const fetchData = async (type) => {
     setLoading(true);
     try {
@@ -120,16 +124,18 @@ const Hero = () => {
       let response = await axios.get(
         `https://api.themoviedb.org/3/trending/${type}/day?api_key=${api_key}&media_type=movie`
       );
-      console.log("response ", response.data.results);
-      setData(response.data.results);
-      setSearch(response.data.results);
+      // console.log("response ", response.data.results);
+      setData(response?.data?.results);
+      setSearch(response?.data?.results);
       setLoading(false);
+      dispatch(addVideo(response?.data?.results));
     } catch (error) {
       setError(error);
     } finally {
       setLoading(false);
     }
   };
+  const dates = useSelector((state) => state?.videoData);
 
   const handleSearch = () => {
     const temp = data.filter((e) =>
@@ -139,6 +145,7 @@ const Hero = () => {
   };
   useEffect(() => {
     setSearch(data);
+    setDate(dates);
   }, []);
 
   useEffect(() => {
@@ -174,7 +181,7 @@ const Hero = () => {
             </button>
           </div>
           <div className="mt-14 text-darkGrayishBlue">
-            <p className="text-lg ml-10">items</p>
+            <p className="text-lg ml-10">{data?.length} items</p>
           </div>
           <div className="flex mt-20" id="list">
             {loading ? (
@@ -182,20 +189,11 @@ const Hero = () => {
                 height="100"
                 width="100"
                 color="#4fa94d"
-                wrapperStyle={{}}
-                wrapperClass=""
                 visible={true}
                 ariaLabel="three-circles-rotating"
                 outerCircleColor=""
                 innerCircleColor=""
                 middleCircleColor=""
-                height="100"
-                width="100"
-                radius="9"
-                color="white"
-                ariaLabel="loading"
-                wrapperStyle
-                wrapperClass
               />
             ) : search.length ? (
               Array.from(search).map((item) => (
@@ -226,6 +224,11 @@ const Hero = () => {
                       sx={{ fill: "goldenrod" }}
                     />
                     <p>{item.vote_average}</p>
+                    <p>
+                      {date?.map((item, i) => (
+                        <div key={i}>{date}</div>
+                      ))}
+                    </p>
                   </div>
                 </motion.div>
               ))
