@@ -3,8 +3,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { ThreeCircles } from "react-loader-spinner";
+import { fetchData } from "../redux/features/MovieSplice";
 import { useDispatch, useSelector } from "react-redux";
 
 // const data = [
@@ -76,8 +76,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Hero = () => {
   const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [data, setData] = useState([]);
   const [search, setSearch] = useState([]);
   const [date, setDate] = useState([]);
   const [error, setError] = useState("");
@@ -117,25 +117,16 @@ const Hero = () => {
   };
   const dispatch = useDispatch();
 
-  const fetchData = async (type) => {
-    setLoading(true);
-    try {
-      const api_key = "070899656df8d3a6ee25fecdf23183b7";
-      let response = await axios.get(
-        `https://api.themoviedb.org/3/trending/${type}/day?api_key=${api_key}&media_type=movie`
-      );
-      // console.log("response ", response.data.results);
-      setData(response?.data?.results);
-      setSearch(response?.data?.results);
-      setLoading(false);
-      dispatch(addVideo(response?.data?.results));
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const dates = useSelector((state) => state?.videoData);
+  useEffect(() => {
+    dispatch(fetchData());
+  }, [dispatch]);
+
+  const data = useSelector((state) => state?.reducer?.videoData?.[1]?.results);
+  const loading = useSelector((state) => state?.reducer?.status);
+
+  useEffect(() => {
+    setSearch(data);
+  }, [data]);
 
   const handleSearch = () => {
     const temp = data.filter((e) =>
@@ -143,20 +134,18 @@ const Hero = () => {
     );
     setSearch(temp);
   };
+
   useEffect(() => {
     setSearch(data);
-    setDate(dates);
   }, []);
 
   useEffect(() => {
     if (value === "") {
       setSearch(data);
+    } else {
+      handleSearch();
     }
   }, [value]);
-
-  useEffect(() => {
-    fetchData("movie");
-  }, []);
 
   return (
     <section id="hero">
@@ -181,10 +170,10 @@ const Hero = () => {
             </button>
           </div>
           <div className="mt-14 text-darkGrayishBlue">
-            <p className="text-lg ml-10">{data?.length} items</p>
+            <p className="text-lg ml-10">{search?.length} items</p>
           </div>
           <div className="flex mt-20" id="list">
-            {loading ? (
+            {loading === "loading" ? (
               <ThreeCircles
                 height="100"
                 width="100"
@@ -195,7 +184,7 @@ const Hero = () => {
                 innerCircleColor=""
                 middleCircleColor=""
               />
-            ) : search.length ? (
+            ) : search?.length ? (
               Array.from(search).map((item) => (
                 <motion.div
                   key={item.id}
