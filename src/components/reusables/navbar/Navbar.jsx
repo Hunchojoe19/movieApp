@@ -1,9 +1,14 @@
 import React from "react";
 import logo from "../../../assets/logo.png";
 import { Link } from "react-scroll";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = React.useState("");
+  const navigate = useNavigate();
+  const handleRoute = () => {
+    navigate("/");
+  };
 
   return (
     <nav className="relative container mx-auto p-6">
@@ -12,20 +17,13 @@ const Navbar = () => {
           <img
             src={logo}
             alt="logo"
-            className="w-[50px] mt-4 md:w-[100px] md"
+            className="w-[50px] mt-4 md:w-[100px] md cursor-pointer"
+            onClick={handleRoute}
           />
         </div>
         <div className="hidden md:flex space-x-10">
-          <Link
-            activeClass="active"
-            to="hero"
-            spy={true}
-            smooth={true}
-            offset={-100}
-            duration={500}
-            className="hover:text-darkGrayishBlue cursor-pointer text-lg"
-          >
-            Home
+          <Link className="hover:text-darkGrayishBlue cursor-pointer text-lg">
+            <button onClick={handleRoute}>Home</button>
           </Link>
 
           <Link
